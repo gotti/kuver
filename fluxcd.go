@@ -112,7 +112,7 @@ func searchHelmRelease(y []*manifest) (vdiff []versionDiff) {
 		if err != nil {
 			log.Printf("failed to parse version: v=%s, %s", hrel.Spec.Chart.Spec.Version, err)
 		}
-		vd := versionDiff{name: hrel.Spec.Chart.Spec.Chart, currentVer: con.String(), latestVer: latest.String()}
+		vd := versionDiff{detector: "helm(fluxcd)", name: hrel.Spec.Chart.Spec.Chart, currentVer: con.String(), latestVer: latest.String()}
 		if !con.Check(latest) {
 			log.Printf("using older version of %s: current=%s, latest=%s\n", hrel.Spec.Chart.Spec.Chart, hrel.Spec.Chart.Spec.Version, latest.String())
 			vd.deprecated = true

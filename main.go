@@ -95,6 +95,7 @@ func openYamlFile(path string) error {
 }
 
 type versionDiff struct {
+	detector   string
 	name       string
 	currentVer string
 	latestVer  string
@@ -102,10 +103,16 @@ type versionDiff struct {
 }
 
 func getLatestVersion(versions []string) *version.Version {
-	vs := make([]*version.Version, len(versions))
-	for i, r := range versions {
-		v, _ := version.NewVersion(r)
-		vs[i] = v
+	var vs []*version.Version
+	for _, r := range versions {
+		if strings.Contains(r, "beta") {
+			continue
+		}
+		v, err := version.NewVersion(r)
+		if err != nil {
+			continue
+		}
+		vs = append(vs, v)
 	}
 	sort.Sort(version.Collection(vs))
 	return vs[len(vs)-1]
@@ -145,16 +152,15 @@ func main() {
 			if v.deprecated {
 				deprecated = true
 			}
-			fmt.Printf("%s %s %s\n", v.name, v.currentVer, v.latestVer)
 			oldText := "latest"
 			if v.deprecated {
 				oldText = "old"
 			}
-			output = append(output, []string{oldText, v.name, v.currentVer, v.latestVer})
+			output = append(output, []string{v.detector, oldText, v.name, v.currentVer, v.latestVer})
 		}
 	}
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"using", "repo/name", "current Version", "Latest Version"})
+	table.SetHeader([]string{"type", "using", "repo/name", "current Version", "Latest Version"})
 
 	for _, v := range output {
 		table.Append(v)

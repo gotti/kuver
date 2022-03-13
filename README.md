@@ -13,4 +13,4 @@ go run main.go --dir ./path
 # supported
 
 - [x] HelmRelease(FluxCD2)
-- [ ] kubernetes manifests with `image:` ( in working )
+- [x] generic kubernetes manifests with `image:`
