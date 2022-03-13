@@ -100,7 +100,8 @@ func searchHelmRelease(y []*manifest) (vdiff []versionDiff) {
 		}
 		hrep, err := searchHelmRepository(y, hrel)
 		if err != nil {
-			log.Printf("error searching helmrepository=%s, err=%s\n", hrel.Spec.Chart.Spec.Chart, err)
+			log.Printf("error searching helmrepository=%s, err=%s\n", hrel.Metadata.Name, err)
+			continue
 		}
 		vs, err := fetchHelmVersions(hrep.Spec.URL, hrel.Spec.Chart.Spec.Chart)
 		if err != nil {

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 )
@@ -13,6 +14,7 @@ func findOldImage(y []*manifest) (vdiff []versionDiff) {
 		for _, re := range res {
 			imgs = append(imgs, strings.Split(re, " ")[1])
 		}
+		fmt.Println()
 		//img = append(img, imgs...)
 	}
 	return

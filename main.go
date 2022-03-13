@@ -42,22 +42,24 @@ type kubernetesManifest struct {
 	Kind       string `yaml:"kind"`
 }
 
-func checkIfManifestHaveValidKeys(y string) bool {
+func checkIfManifestHaveValidKeys(y string) (bool, error) {
 	var m kubernetesManifest
 	err := yaml.Unmarshal([]byte(y), &m)
 	if err != nil {
-		log.Printf("failed to unmarshal kubernetes manifest %s", y)
+		return false, fmt.Errorf("failed to unmarshal kubernetes manifest")
 	}
 	if m.APIVersion != "" && m.Kind != "" {
-		return true
+		return true, nil
 	}
-	return false
+	return false, nil
 }
 
 type manifest string
 
 func newManifest(m string) (*manifest, error) {
-	if !checkIfManifestHaveValidKeys(m) {
+	if b, err := checkIfManifestHaveValidKeys(m); err != nil {
+		return nil, errInvalidKubernetesManifest
+	} else if !b {
 		return nil, errInvalidKubernetesManifest
 	}
 	ret := manifest(m)
@@ -84,6 +86,7 @@ func openYamlFile(path string) error {
 			log.Printf("opening file=%s, err=%s", path, err)
 			continue
 		} else if err != nil {
+			fmt.Println("skipping")
 			return fmt.Errorf("opening file=%s, err=%w", path, err)
 		}
 		manifests = append(manifests, m)
